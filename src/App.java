@@ -1,6 +1,7 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class App {
 
@@ -17,10 +18,35 @@ public class App {
         }
     }
 
+    public static void createTable(Connection conn) {
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS users ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "name VARCHAR(255) NOT NULL)";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(createTableSQL);
+            System.out.println("Table 'users' created or already exists.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertData(Connection conn, String name) {
+        String insertSQL = "INSERT INTO users (name) VALUES ('" + name + "')";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(insertSQL);
+            System.out.println("Data inserted into 'users' table.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         Connection conn = getConnection();
         if (conn != null) {
             System.out.println("Connected to database!");
+            createTable(conn);
+            insertData(conn, "John Doe");
+            insertData(conn, "Jane Smith");
         } else {
             System.out.println("Failed to connect to database.");
         }
